@@ -43,24 +43,29 @@ Tile.prototype.draw = function(context) {
 /* Snake definition */
 var Snake = function() {
     this.tiles = [new Tile(10, "#000000")];
+    this.head = this.tiles[0];
     this.direction = Direction.DOWN;
 }
 
-Snake.prototype.update = function() {
-    for (var i = 0; i < this.tiles.length; i++) {
-        this.tiles[i].update(this.direction);
-    }
+Snake.prototype.grow = function() {
+
 }
 
-Snake.prototype.draw = function() {
-    for (var i = 0; i < this.tiles.length; i++) {
+Snake.prototype.update = function() {
+    for (var i = 0; i < this.tiles.length; i++)
+        this.tiles[i].update(this.direction);
+}
+
+Snake.prototype.draw = function(context) {
+    for (var i = 0; i < this.tiles.length; i++)
         this.tiles[i].draw(context);
-    }
 }
 
 /* Constants */
 var TICK_INTERVAL = 100;
+var MAX_FRUIT_INTERVAL = 10000;
 
+/* Enums */
 var Direction = {
     UP:    1,
     DOWN:  2,
@@ -80,6 +85,7 @@ var canvas;
 var context;
 var playing;
 var snake;
+var fruits;
 
 /* Game functions */
 function init() {
@@ -87,6 +93,7 @@ function init() {
     context = canvas.getContext("2d");
     playing = false;
     snake = new Snake();
+    fruits = [];
 
     canvas.addEventListener("keydown", handleKeyboardInput, true);
     canvas.focus();
@@ -121,12 +128,31 @@ function handleKeyboardInput(event) {
 
 function update() {
     snake.update();
+
+    // Check if the snake ate some fruit
+    for (var i = 0; i < fruits.length; i++) {
+        if (fruits[i].x == snake.head.x && fruits[i].y == snake.head.y) {
+            fruits.splice(i, 1);
+            snake.grow();
+        }
+    }
 }
 
 function draw() {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    snake.draw();
+    snake.draw(context);
+    for (var i = 0; i < fruits.length; i++)
+        fruits[i].draw(context);
+}
+
+function createFruit() {
+    var fruit = new Tile(10, "red");
+    fruit.x = Math.floor(Math.random() * canvas.width / 10) * 10;
+    fruit.y = Math.floor(Math.random() * canvas.height / 10) * 10;
+    fruits.push(fruit);
+
+    setTimeout(createFruit, Math.random() * MAX_FRUIT_INTERVAL);
 }
 
 /* main function */
@@ -135,6 +161,7 @@ function main() {
 
     playing = true;
     setTimeout(tick, TICK_INTERVAL);
+    setTimeout(createFruit, Math.random() * MAX_FRUIT_INTERVAL);
 }
 
 console.log("LET THE TILES BEGIN!");
