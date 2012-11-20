@@ -42,7 +42,7 @@ Tile.prototype.draw = function(context) {
 
 /* Snake definition */
 var Snake = function() {
-    this.tiles = [new Tile(10, "#000000")];
+    this.tiles = [new Tile(TILE_THICKNESS, "black")];
     this.head = this.tiles[0];
     this.direction = Direction.DOWN;
 }
@@ -64,6 +64,7 @@ Snake.prototype.draw = function(context) {
 /* Constants */
 var TICK_INTERVAL = 100;
 var MAX_FRUIT_INTERVAL = 10000;
+var TILE_THICKNESS = 20;
 
 /* Enums */
 var Direction = {
@@ -147,9 +148,12 @@ function draw() {
 }
 
 function createFruit() {
-    var fruit = new Tile(10, "red");
-    fruit.x = Math.floor(Math.random() * canvas.width / 10) * 10;
-    fruit.y = Math.floor(Math.random() * canvas.height / 10) * 10;
+    if (!playing)
+        return;
+
+    var fruit = new Tile(TILE_THICKNESS, "red");
+    fruit.x = Math.floor(Math.random() * canvas.width / TILE_THICKNESS) * TILE_THICKNESS;
+    fruit.y = Math.floor(Math.random() * canvas.height / TILE_THICKNESS) * TILE_THICKNESS;
     fruits.push(fruit);
 
     setTimeout(createFruit, Math.random() * MAX_FRUIT_INTERVAL);
