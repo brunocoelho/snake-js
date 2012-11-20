@@ -15,16 +15,16 @@ Tile.prototype.setPos = function(x, y) {
 
 Tile.prototype.update = function(direction) {
     switch (direction) {
-    case DIRECTION.UP:
+    case Direction.UP:
         this.y -= this.step;
         break;
-    case DIRECTION.DOWN:
+    case Direction.DOWN:
         this.y += this.step;
         break;
-    case DIRECTION.LEFT:
+    case Direction.LEFT:
         this.x -= this.step;
         break;
-    case DIRECTION.RIGHT:
+    case Direction.RIGHT:
         this.x += this.step;
         break;
     default:
@@ -43,14 +43,14 @@ Tile.prototype.draw = function(context) {
 /* Constants */
 var TICK_INTERVAL = 100;
 
-var DIRECTION = {
+var Direction = {
     UP:    1,
     DOWN:  2,
     LEFT:  3,
     RIGHT: 4
 }
 
-var KEY = {
+var Key = {
     UP:    38,
     DOWN:  40,
     LEFT:  37,
@@ -70,7 +70,7 @@ function init() {
     context = canvas.getContext("2d");
     playing = false;
     tiles = [new Tile(10, "#000000")];
-    currentDirection = DIRECTION.DOWN;
+    currentDirection = Direction.DOWN;
 
     canvas.addEventListener("keydown", handleKeyboardInput, true);
     canvas.focus();
@@ -90,21 +90,16 @@ function handleKeyboardInput(event) {
     if (!playing)
         return;
 
-    switch(event.keyCode) {
-    case KEY.UP:
-        currentDirection = DIRECTION.UP;
-        break;
-    case KEY.DOWN:
-        currentDirection = DIRECTION.DOWN;
-        break;
-    case KEY.LEFT:
-        currentDirection = DIRECTION.LEFT;
-        break;
-    case KEY.RIGHT:
-        currentDirection = DIRECTION.RIGHT;
-        break;
-    default:
-        break;
+    if (currentDirection == Direction.UP || currentDirection == Direction.DOWN) {
+        if (event.keyCode == Key.LEFT)
+            currentDirection = Direction.LEFT;
+        else if (event.keyCode == Key.RIGHT)
+            currentDirection = Direction.RIGHT;
+    } else {
+        if (event.keyCode == Key.UP)
+            currentDirection = Direction.UP;
+        else if (event.keyCode == Key.DOWN)
+            currentDirection = Direction.DOWN
     }
 }
 
