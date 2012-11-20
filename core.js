@@ -8,9 +8,9 @@ var Tile = function(thickness, color, step) {
     this.step = (step == undefined) ? thickness : step;
 }
 
-Tile.prototype.setPos = function(x, y) {
-    this.x = x;
-    this.y = y;
+Tile.prototype.setPos = function(point) {
+    this.x = point.x;
+    this.y = point.y;
 }
 
 Tile.prototype.update = function(direction) {
@@ -45,15 +45,26 @@ var Snake = function() {
     this.tiles = [new Tile(TILE_THICKNESS, "black")];
     this.head = this.tiles[0];
     this.direction = Direction.DOWN;
+    this.addNewTile = false;
 }
 
 Snake.prototype.grow = function() {
-
+    this.addNewTile = true;
 }
 
 Snake.prototype.update = function() {
-    for (var i = 0; i < this.tiles.length; i++)
-        this.tiles[i].update(this.direction);
+    var newHead;
+    if (this.addNewTile) {
+        this.addNewTile = false;
+        newHead = new Tile(TILE_THICKNESS, "black");
+    } else {
+        newHead = this.tiles.pop();
+    }
+
+    newHead.setPos(this.head);
+    this.tiles.splice(0, 0, newHead);
+    this.head = this.tiles[0];
+    this.head.update(this.direction);
 }
 
 Snake.prototype.draw = function(context) {
