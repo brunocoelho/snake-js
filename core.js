@@ -84,6 +84,16 @@ Snake.prototype.draw = function(context) {
         this.tiles[i].draw(context);
 }
 
+/* requestAnimationFrame function */
+var requestAnimationFrame = (function() {
+    return window.requestAnimationFrame
+           || window.webkitRequestAnimationFrame
+           || window.mozRequestAnimationFrame
+           || window.oRequestAnimationFrame
+           || window.msRequestAnimationFrame
+           || function(callback) { window.setTimeout(callback, 1000 / 60); };
+})();
+
 /* Constants */
 var TICK_INTERVAL = 100;
 var MAX_FRUIT_INTERVAL = 10000;
@@ -108,6 +118,7 @@ var Key = {
 var canvas; 
 var context;
 var playing;
+var lastUpdateTime;
 var snake;
 var fruits;
 
@@ -116,6 +127,7 @@ function init() {
     canvas = document.getElementById("game_canvas");
     context = canvas.getContext("2d");
     playing = false;
+    lastUpdateTime = new Date();
     snake = new Snake();
     fruits = [];
 
@@ -128,14 +140,21 @@ function reset() {
     fruits = [];
 }
 
-function tick() {
+function tick(currentTime) {
     if (!playing)
         return;
 
-    update();
-    draw();
+    var delta = currentTime - lastUpdateTime;
+    if (delta > TICK_INTERVAL) {
+        update();
+        draw();
+        lastUpdateTime = currentTime;
+    }
 
-    setTimeout(tick, TICK_INTERVAL);
+    if (delta > Math.random() * MAX_FRUIT_INTERVAL)
+        createFruit();
+
+    requestAnimationFrame(tick);
 }
 
 function handleKeyboardInput(event) {
@@ -180,15 +199,10 @@ function draw() {
 }
 
 function createFruit() {
-    if (!playing)
-        return;
-
     var fruit = new Tile(TILE_THICKNESS, "red");
     fruit.x = Math.floor(Math.random() * canvas.width / TILE_THICKNESS) * TILE_THICKNESS;
     fruit.y = Math.floor(Math.random() * canvas.height / TILE_THICKNESS) * TILE_THICKNESS;
     fruits.push(fruit);
-
-    setTimeout(createFruit, Math.random() * MAX_FRUIT_INTERVAL);
 }
 
 /* main function */
@@ -196,9 +210,7 @@ function main() {
     init();
 
     playing = true;
-    setTimeout(tick, TICK_INTERVAL);
-    setTimeout(createFruit, Math.random() * MAX_FRUIT_INTERVAL);
+    requestAnimationFrame(tick);
 }
 
-console.log("LET THE TILES BEGIN!");
 main();
