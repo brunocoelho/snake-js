@@ -13,6 +13,10 @@ Tile.prototype.setPos = function(point) {
     this.y = point.y;
 }
 
+Tile.prototype.collides = function(that) {
+    return this.x == that.x && this.y == that.y;
+}
+
 Tile.prototype.update = function(direction) {
     switch (direction) {
     case Direction.UP:
@@ -50,6 +54,14 @@ var Snake = function() {
 
 Snake.prototype.grow = function() {
     this.addNewTile = true;
+}
+
+Snake.prototype.hasCollision = function() {
+    for (var i = 1; i < this.tiles.length; i++) {
+        if (this.head.collides(this.tiles[i]))
+            return true;
+    }
+    return false;
 }
 
 Snake.prototype.update = function() {
@@ -111,6 +123,11 @@ function init() {
     canvas.focus();
 }
 
+function reset() {
+    snake = new Snake();
+    fruits = [];
+}
+
 function tick() {
     if (!playing)
         return;
@@ -141,9 +158,13 @@ function handleKeyboardInput(event) {
 function update() {
     snake.update();
 
+    // Check game over
+    if (snake.hasCollision())
+        reset();
+
     // Check if the snake ate some fruit
     for (var i = 0; i < fruits.length; i++) {
-        if (fruits[i].x == snake.head.x && fruits[i].y == snake.head.y) {
+        if (fruits[i].collides(snake.head)) {
             fruits.splice(i, 1);
             snake.grow();
         }
