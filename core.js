@@ -144,8 +144,10 @@ function reset() {
 }
 
 function tick(currentTime) {
-    if (!playing)
+    if (!playing) {
+        requestAnimationFrame(tick);
         return;
+    }
 
     var delta = currentTime - lastUpdateTime;
     if (delta > TICK_INTERVAL) {
@@ -221,3 +223,14 @@ function main() {
 }
 
 main();
+
+document.getElementById("pause_button").addEventListener("click", function() {
+    playing = !playing;
+
+    if (playing) {
+        this.src = "images/pause.png";
+        canvas.focus();
+    } else {
+        this.src = "images/play.png";
+    }
+});
