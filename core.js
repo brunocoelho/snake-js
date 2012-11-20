@@ -119,6 +119,8 @@ var canvas;
 var context;
 var playing;
 var lastUpdateTime;
+var lastFruitTime;
+var createFruitInterval;
 var snake;
 var fruits;
 
@@ -127,7 +129,8 @@ function init() {
     canvas = document.getElementById("game_canvas");
     context = canvas.getContext("2d");
     playing = false;
-    lastUpdateTime = new Date();
+    lastUpdateTime = lastFruitTime = new Date();
+    createFruitInterval = Math.random() * MAX_FRUIT_INTERVAL;
     snake = new Snake();
     fruits = [];
 
@@ -151,8 +154,12 @@ function tick(currentTime) {
         lastUpdateTime = currentTime;
     }
 
-    if (delta > Math.random() * MAX_FRUIT_INTERVAL)
+    var delta2 = currentTime - lastFruitTime;
+    if (delta2 > createFruitInterval && fruits.length === 0) {
         createFruit();
+        createFruitInterval = Math.random() * MAX_FRUIT_INTERVAL;
+        lastFruitTime = currentTime;
+    }
 
     requestAnimationFrame(tick);
 }
