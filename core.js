@@ -40,6 +40,24 @@ Tile.prototype.draw = function(context) {
     context.fillRect(this.x, this.y, this.width, this.height);
 }
 
+/* Snake definition */
+var Snake = function() {
+    this.tiles = [new Tile(10, "#000000")];
+    this.direction = Direction.DOWN;
+}
+
+Snake.prototype.update = function() {
+    for (var i = 0; i < this.tiles.length; i++) {
+        this.tiles[i].update(this.direction);
+    }
+}
+
+Snake.prototype.draw = function() {
+    for (var i = 0; i < this.tiles.length; i++) {
+        this.tiles[i].draw(context);
+    }
+}
+
 /* Constants */
 var TICK_INTERVAL = 100;
 
@@ -61,16 +79,14 @@ var Key = {
 var canvas; 
 var context;
 var playing;
-var tiles;
-var currentDirection;
+var snake;
 
 /* Game functions */
 function init() {
     canvas = document.getElementById("game_canvas");
     context = canvas.getContext("2d");
     playing = false;
-    tiles = [new Tile(10, "#000000")];
-    currentDirection = Direction.DOWN;
+    snake = new Snake();
 
     canvas.addEventListener("keydown", handleKeyboardInput, true);
     canvas.focus();
@@ -90,31 +106,27 @@ function handleKeyboardInput(event) {
     if (!playing)
         return;
 
-    if (currentDirection == Direction.UP || currentDirection == Direction.DOWN) {
+    if (snake.direction == Direction.UP || snake.direction == Direction.DOWN) {
         if (event.keyCode == Key.LEFT)
-            currentDirection = Direction.LEFT;
+            snake.direction = Direction.LEFT;
         else if (event.keyCode == Key.RIGHT)
-            currentDirection = Direction.RIGHT;
+            snake.direction = Direction.RIGHT;
     } else {
         if (event.keyCode == Key.UP)
-            currentDirection = Direction.UP;
+            snake.direction = Direction.UP;
         else if (event.keyCode == Key.DOWN)
-            currentDirection = Direction.DOWN
+            snake.direction = Direction.DOWN
     }
 }
 
 function update() {
-    for (var i = 0; i < tiles.length; i++) {
-        tiles[i].update(currentDirection);
-    }
+    snake.update();
 }
 
 function draw() {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    for (var i = 0; i < tiles.length; i++) {
-        tiles[i].draw(context);
-    }
+    snake.draw();
 }
 
 /* main function */
