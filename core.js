@@ -4,7 +4,7 @@ var Tile = function(thickness, color, step) {
     this.y = 0;
     this.width = thickness;
     this.height = thickness;
-    this.color = color
+    this.color = color;
     this.step = (step == undefined) ? thickness : step;
 }
 
@@ -111,11 +111,11 @@ var Key = {
     UP:    38,
     DOWN:  40,
     LEFT:  37,
-    RIGHT: 39   
+    RIGHT: 39
 }
 
 /* Game variables */
-var canvas; 
+var canvas;
 var context;
 var playing;
 var lastUpdateTime;
