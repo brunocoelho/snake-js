@@ -1,5 +1,5 @@
 /* Tile definition */
-var Tile = function(thickness, color, step) {
+var Tile = function (thickness, color, step) {
     this.x = 0;
     this.y = 0;
     this.width = thickness;
@@ -8,16 +8,16 @@ var Tile = function(thickness, color, step) {
     this.step = (step == undefined) ? thickness : step;
 }
 
-Tile.prototype.setPos = function(point) {
+Tile.prototype.setPos = function (point) {
     this.x = point.x;
     this.y = point.y;
 }
 
-Tile.prototype.collides = function(that) {
-    return this.x == that.x && this.y == that.y;
+Tile.prototype.collides = function (that) {
+    return this.x === that.x && this.y === that.y;
 }
 
-Tile.prototype.update = function(direction) {
+Tile.prototype.update = function (direction) {
     switch (direction) {
     case Direction.UP:
         this.y -= this.step;
@@ -39,32 +39,36 @@ Tile.prototype.update = function(direction) {
     this.x = ((this.x % canvas.width) + canvas.width) % canvas.width;
 }
 
-Tile.prototype.draw = function(context) {
+Tile.prototype.draw = function (context) {
     context.fillStyle = this.color;
     context.fillRect(this.x, this.y, this.width, this.height);
 }
 
 /* Snake definition */
-var Snake = function() {
+var Snake = function () {
     this.tiles = [new Tile(TILE_THICKNESS, "black")];
     this.head = this.tiles[0];
     this.direction = Direction.DOWN;
     this.addNewTile = false;
 }
 
-Snake.prototype.grow = function() {
+Snake.prototype.grow = function () {
     this.addNewTile = true;
 }
 
-Snake.prototype.hasCollision = function() {
-    for (var i = 1; i < this.tiles.length; i++) {
-        if (this.head.collides(this.tiles[i]))
+Snake.prototype.hasCollision = function () {
+    var i,
+        length;
+
+    for (i = 1, length = this.tiles.length; i < length; i++) {
+        if (this.head.collides(this.tiles[i])) {
             return true;
+        }
     }
     return false;
 }
 
-Snake.prototype.update = function() {
+Snake.prototype.update = function () {
     var newHead;
     if (this.addNewTile) {
         this.addNewTile = false;
@@ -79,13 +83,14 @@ Snake.prototype.update = function() {
     this.head.update(this.direction);
 }
 
-Snake.prototype.draw = function(context) {
-    for (var i = 0; i < this.tiles.length; i++)
+Snake.prototype.draw = function (context) {
+    for (var i = 0; i < this.tiles.length; i++) {
         this.tiles[i].draw(context);
+    }
 }
 
 /* requestAnimationFrame function */
-var requestAnimationFrame = (function() {
+var requestAnimationFrame = (function () {
     return window.requestAnimationFrame
            || window.webkitRequestAnimationFrame
            || window.mozRequestAnimationFrame
@@ -95,9 +100,9 @@ var requestAnimationFrame = (function() {
 })();
 
 /* Constants */
-var TICK_INTERVAL = 100;
+var TICK_INTERVAL      = 100;
 var MAX_FRUIT_INTERVAL = 10000;
-var TILE_THICKNESS = 20;
+var TILE_THICKNESS     = 20;
 
 /* Enums */
 var Direction = {
@@ -127,6 +132,7 @@ var fruits;
 /* Game functions */
 function init() {
     canvas = document.getElementById("game_canvas");
+    resize();
     context = canvas.getContext("2d");
     playing = false;
     lastUpdateTime = lastFruitTime = new Date();
@@ -136,6 +142,13 @@ function init() {
 
     canvas.addEventListener("keydown", handleKeyboardInput, true);
     canvas.focus();
+}
+
+window.onresize = resize;
+
+function resize() {
+    canvas.width = window.innerWidth - 20;
+    canvas.height = window.innerHeight - 20;
 }
 
 function reset() {
@@ -167,19 +180,24 @@ function tick(currentTime) {
 }
 
 function handleKeyboardInput(event) {
-    if (!playing)
+    if (!playing) {
         return;
+    }
 
     if (snake.direction == Direction.UP || snake.direction == Direction.DOWN) {
-        if (event.keyCode == Key.LEFT)
+        if (event.keyCode == Key.LEFT) {
             snake.direction = Direction.LEFT;
-        else if (event.keyCode == Key.RIGHT)
+        }
+        else if (event.keyCode == Key.RIGHT) {
             snake.direction = Direction.RIGHT;
+        }
     } else {
-        if (event.keyCode == Key.UP)
+        if (event.keyCode == Key.UP) {
             snake.direction = Direction.UP;
-        else if (event.keyCode == Key.DOWN)
+        }
+        else if (event.keyCode == Key.DOWN) {
             snake.direction = Direction.DOWN
+        }
     }
 }
 
@@ -187,11 +205,12 @@ function update() {
     snake.update();
 
     // Check game over
-    if (snake.hasCollision())
+    if (snake.hasCollision()) {
         reset();
+    }
 
     // Check if the snake ate some fruit
-    for (var i = 0; i < fruits.length; i++) {
+    for (var i = 0, length = fruits.length; i < length; i++) {
         if (fruits[i].collides(snake.head)) {
             fruits.splice(i, 1);
             snake.grow();
@@ -224,7 +243,7 @@ function main() {
 
 main();
 
-document.getElementById("pause_button").addEventListener("click", function() {
+document.getElementById("pause_button").addEventListener("click", function () {
     playing = !playing;
 
     if (playing) {
